@@ -12,6 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +35,8 @@ public class SecurityConfig {
             JwtService jwtService) throws Exception {
         
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable global CORS support
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless REST APIs
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())) // For H2 Console accessibility
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
@@ -43,5 +50,21 @@ public class SecurityConfig {
             .addFilterBefore(new ApiKeyAuthenticationFilter(userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // In production, you can lock this down to your specific Vercel URL
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); 
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "X-API-KEY", "Accept"));
+        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+        configuration.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
