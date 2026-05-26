@@ -1,0 +1,45 @@
+# ==========================================
+# Maven Build Compilation Outputs
+# ==========================================
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ==========================================
+# IDE Specific Configurations
+# ==========================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+tmp/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==========================================
+# Credentials, API Keys, and Environments
+# ==========================================
+.env
+.env.local
+.env.*.local
+application-production.properties
+secrets.properties
+
+# ==========================================
+# OS Metadata and Logs
+# ==========================================
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+*.log

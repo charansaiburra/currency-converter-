@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApexConvert | Premium Real-Time Currency Converter</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Background glowing shapes for Apple/Stripe-like visual depth -->
+    <div class="glow-bg">
+        <div class="glow-shape shape-1"></div>
+        <div class="glow-shape shape-2"></div>
+        <div class="glow-shape shape-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-icon-wrapper">
+                    <i data-lucide="refresh-cw" class="logo-icon spinning-slow"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>ApexConvert</h1>
+                    <span>Live Exchange Engine</span>
+                </div>
+            </div>
+            
+            <div class="user-status-card" id="user-status-card">
+                <div class="status-indicator offline" id="status-dot"></div>
+                <div class="status-info">
+                    <p class="status-label" id="status-text">Disconnected</p>
+                    <p class="status-subtext" id="status-user-sub">Authenticate below</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout Grid -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Column: Authenticate & Convert -->
+            <div class="dashboard-col col-left">
+                
+                <!-- Auth Widget: Register & Session Key -->
+                <section class="dashboard-card glass-card fade-in" id="auth-section">
+                    <div class="card-header">
+                        <div class="card-title-wrapper">
+                            <i data-lucide="shield-check" class="card-icon text-violet"></i>
+                            <h2>API Authentication</h2>
+                        </div>
+                        <span class="badge badge-required">Required</span>
+                    </div>
+                    
+                    <!-- Tabs to switch between registering a new key or entering an existing one -->
+                    <div class="auth-tabs">
+                        <button class="tab-btn active" id="tab-register">Get New Key</button>
+                        <button class="tab-btn" id="tab-login">Use Existing Key</button>
+                    </div>
+
+                    <!-- Register tab content -->
+                    <div class="tab-content active" id="content-register">
+                        <p class="card-description">Register in seconds to generate an instant, secure API Key for conversions.</p>
+                        <form id="register-form" class="form-group">
+                            <div class="input-wrapper">
+                                <label for="reg-username">Username</label>
+                                <div class="input-icon-field">
+                                    <i data-lucide="user" class="field-icon"></i>
+                                    <input type="text" id="reg-username" placeholder="e.g., john_doe" required>
+                                </div>
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="reg-email">Email Address</label>
+                                <div class="input-icon-field">
+                                    <i data-lucide="mail" class="field-icon"></i>
+                                    <input type="email" id="reg-email" placeholder="e.g., john@example.com" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="btn-register-submit">
+                                <span>Generate Secure Key</span>
+                                <i data-lucide="key" class="btn-icon"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Use existing key tab content -->
+                    <div class="tab-content" id="content-login">
+                        <p class="card-description">Paste your API Key here to resume your previous converter session.</p>
+                        <form id="login-form" class="form-group">
+                            <div class="input-wrapper">
+                                <label for="login-key">Your API Key</label>
+                                <div class="input-icon-field">
+                                    <i data-lucide="key" class="field-icon"></i>
+                                    <input type="password" id="login-key" placeholder="Enter your 32-character key" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-violet" id="btn-login-submit">
+                                <span>Activate Session</span>
+                                <i data-lucide="power" class="btn-icon"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Key Reveal Notification Box (Shows after registration) -->
+                    <div class="key-box hidden" id="key-reveal-box">
+                        <div class="key-box-header">
+                            <i data-lucide="check-circle" class="success-icon text-cyan"></i>
+                            <h3>Registration Successful!</h3>
+                        </div>
+                        <p class="key-warning">Copy your unique API key now. You will need it to convert currencies.</p>
+                        <div class="key-value-wrapper">
+                            <code class="key-text" id="generated-key-display">--------------------------------</code>
+                            <button class="copy-btn" id="btn-copy-key" title="Copy to clipboard">
+                                <i data-lucide="copy" class="copy-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Converter Widget (requires key, initially locked view) -->
+                <section class="dashboard-card glass-card locked" id="converter-section">
+                    <div class="lock-overlay" id="converter-lock-overlay">
+                        <div class="lock-content">
+                            <div class="lock-icon-outer">
+                                <i data-lucide="lock" class="lock-icon text-violet"></i>
+                            </div>
+                            <h3>Converter Module Locked</h3>
+                            <p>Generate or enter an API Key to enable real-time currency conversions.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="card-title-wrapper">
+                            <i data-lucide="coins" class="card-icon text-cyan"></i>
+                            <h2>Currency Exchange</h2>
+                        </div>
+                        <span class="badge badge-active" id="engine-badge">Real-Time</span>
+                    </div>
+
+                    <div class="converter-form">
+                        <!-- Amount Input -->
+                        <div class="input-wrapper amount-input-container">
+                            <label for="conv-amount">Amount to Convert</label>
+                            <div class="input-icon-field amount-field">
+                                <span class="currency-symbol-tag" id="source-symbol">$</span>
+                                <input type="number" id="conv-amount" min="0.01" step="any" placeholder="100.00" value="100.00">
+                            </div>
+                        </div>
+
+                        <!-- Dropdowns and Swap Section -->
+                        <div class="currency-dropdowns-row">
+                            <div class="input-wrapper flex-1">
+                                <label for="conv-from">From</label>
+                                <select id="conv-from" class="currency-select">
+                                    <!-- Dynamic Options -->
+                                </select>
+                            </div>
+
+                            <button class="swap-button" id="btn-swap-currency" title="Swap currencies">
+                                <i data-lucide="arrow-left-right" class="swap-icon"></i>
+                            </button>
+
+                            <div class="input-wrapper flex-1">
+                                <label for="conv-to">To</label>
+                                <select id="conv-to" class="currency-select">
+                                    <!-- Dynamic Options -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button class="btn btn-primary" id="btn-convert">
+                            <span>Convert Amount</span>
+                            <i data-lucide="circle-arrow-right" class="btn-icon"></i>
+                        </button>
+
+                        <!-- Live Result Display Card -->
+                        <div class="result-card hidden" id="result-display-card">
+                            <div class="result-top">
+                                <span id="result-source-text">100 USD =</span>
+                                <div class="result-big-value" id="result-target-value">8325.40 INR</div>
+                            </div>
+                            <div class="result-meta">
+                                <div class="meta-item">
+                                    <i data-lucide="trending-up" class="meta-icon"></i>
+                                    <span id="result-rate-text">1 USD = 83.2540 INR</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i data-lucide="clock" class="meta-icon"></i>
+                                    <span id="result-time-text">Updated just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Live Grid & History -->
+            <div class="dashboard-col col-right">
+                
+                <!-- Live Rates Overview Grid -->
+                <section class="dashboard-card glass-card fade-in" id="rates-section">
+                    <div class="card-header">
+                        <div class="card-title-wrapper">
+                            <i data-lucide="activity" class="card-icon text-cyan"></i>
+                            <h2>Live Global Rates</h2>
+                        </div>
+                        <div class="rate-base-selector">
+                            <span class="base-label">Base:</span>
+                            <select id="rate-base" class="mini-select">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="INR">INR</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="card-description">Live exchange rates computed from major currency corridors.</p>
+
+                    <div class="rates-grid" id="rates-grid-container">
+                        <!-- Dynamic Rate Cards will load here -->
+                        <div class="rate-skeleton"></div>
+                        <div class="rate-skeleton"></div>
+                        <div class="rate-skeleton"></div>
+                        <div class="rate-skeleton"></div>
+                    </div>
+                </section>
+
+                <!-- History Logs Card (requires key, initially locked view) -->
+                <section class="dashboard-card glass-card locked" id="history-section">
+                    <div class="lock-overlay" id="history-lock-overlay">
+                        <div class="lock-content">
+                            <div class="lock-icon-outer">
+                                <i data-lucide="lock" class="lock-icon text-violet"></i>
+                            </div>
+                            <h3>Transaction History Locked</h3>
+                            <p>Generate or enter an API Key to retrieve your conversion logs.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="card-title-wrapper">
+                            <i data-lucide="history" class="card-icon text-violet"></i>
+                            <h2>Conversion Log</h2>
+                        </div>
+                        <button class="clear-btn-disabled" id="btn-clear-history" title="Export logs" disabled>
+                            <i data-lucide="download" class="clear-icon"></i>
+                        </button>
+                    </div>
+
+                    <div class="history-list-wrapper">
+                        <div class="history-list" id="history-list-container">
+                            <!-- Dynamic history items -->
+                            <div class="empty-history" id="empty-history-indicator">
+                                <i data-lucide="folder-open" class="empty-history-icon"></i>
+                                <p>No conversion history logged yet.</p>
+                                <span>Try making your first conversion above!</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>ApexConvert &copy; 2026. Built with Spring Boot, H2 Database, and Pure Vanilla CSS/JS.</p>
+            <div class="footer-links">
+                <a href="/h2-console" target="_blank" class="footer-link">
+                    <i data-lucide="database" class="footer-link-icon"></i>
+                    <span>H2 DB Console</span>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div class="toast hidden" id="toast">
+        <i data-lucide="info" class="toast-icon" id="toast-icon"></i>
+        <span class="toast-message" id="toast-message">Notification details</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
